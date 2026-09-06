@@ -10,7 +10,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(const PortfolioApp());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Verify Name and Role from PortfolioData
     expect(find.textContaining(PortfolioData.personal.fullName), findsWidgets);
@@ -35,7 +36,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(const PortfolioApp());
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Verify Name and Header exist
     expect(find.textContaining(PortfolioData.personal.fullName), findsWidgets);

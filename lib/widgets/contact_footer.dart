@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../portfolio_data.dart';
 import '../theme/app_theme.dart';
+import 'animated_cursor.dart';
+import 'interactive_card.dart';
 import 'social_icons.dart';
 
 class ContactFooter extends StatefulWidget {
@@ -99,28 +101,13 @@ class _ContactFooterState extends State<ContactFooter> {
           const SizedBox(height: 48),
 
           // Main Contact Card
-          Container(
-            width: double.infinity,
+          InteractiveTiltCard(
+            accentColor: AppColors.secondary,
+            cursorLabel: "CONNECT",
+            maxTiltAngle: 0.04,
+            hoverScale: 1.01,
             padding: EdgeInsets.all(isMobile ? 24.0 : 40.0),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  AppColors.surface,
-                  AppColors.surfaceSubtle,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: AppColors.cardBorder, width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  blurRadius: 40,
-                  offset: const Offset(0, 15),
-                ),
-              ],
-            ),
+            borderRadius: BorderRadius.circular(28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -152,67 +139,79 @@ class _ContactFooterState extends State<ContactFooter> {
                   spacing: 14,
                   runSpacing: 14,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final uri = Uri.parse("mailto:${PortfolioData.personal.email}");
-                        if (await canLaunchUrl(uri)) launchUrl(uri);
-                      },
-                      icon: const Icon(Icons.mail_outline_rounded, size: 18),
-                      label: const Text("Open Mail Client"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 22,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    CursorInteractable(
+                      mode: CursorMode.pointer,
+                      accentColor: AppColors.primaryLight,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final uri = Uri.parse("mailto:${PortfolioData.personal.email}");
+                          if (await canLaunchUrl(uri)) launchUrl(uri);
+                        },
+                        icon: const Icon(Icons.mail_outline_rounded, size: 18),
+                        label: const Text("Open Mail Client"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
                     ),
 
-                    OutlinedButton.icon(
-                      onPressed: _copyEmail,
-                      icon: Icon(
-                        _emailCopied ? Icons.check_circle : Icons.copy_rounded,
-                        size: 16,
-                        color: _emailCopied ? AppColors.emerald : AppColors.textPrimary,
-                      ),
-                      label: Text(_emailCopied ? "Email Copied!" : "Copy Email Address"),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textPrimary,
-                        side: BorderSide(
-                          color: _emailCopied ? AppColors.emerald : AppColors.cardBorder,
-                          width: 1.2,
+                    CursorInteractable(
+                      mode: CursorMode.pointer,
+                      accentColor: AppColors.emerald,
+                      child: OutlinedButton.icon(
+                        onPressed: _copyEmail,
+                        icon: Icon(
+                          _emailCopied ? Icons.check_circle : Icons.copy_rounded,
+                          size: 16,
+                          color: _emailCopied ? AppColors.emerald : AppColors.textPrimary,
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                        label: Text(_emailCopied ? "Email Copied!" : "Copy Email Address"),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textPrimary,
+                          side: BorderSide(
+                            color: _emailCopied ? AppColors.emerald : AppColors.cardBorder,
+                            width: 1.2,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          backgroundColor: AppColors.surface,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        backgroundColor: AppColors.surface,
                       ),
                     ),
 
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final uri = Uri.parse("tel:${PortfolioData.personal.phone}");
-                        if (await canLaunchUrl(uri)) launchUrl(uri);
-                      },
-                      icon: const Icon(Icons.phone_outlined, size: 16),
-                      label: Text(PortfolioData.personal.phone),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                        side: const BorderSide(color: AppColors.cardBorder),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    CursorInteractable(
+                      mode: CursorMode.pointer,
+                      accentColor: AppColors.secondary,
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final uri = Uri.parse("tel:${PortfolioData.personal.phone}");
+                          if (await canLaunchUrl(uri)) launchUrl(uri);
+                        },
+                        icon: const Icon(Icons.phone_outlined, size: 16),
+                        label: Text(PortfolioData.personal.phone),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.textSecondary,
+                          side: const BorderSide(color: AppColors.cardBorder),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
                     ),
@@ -281,16 +280,20 @@ class _ContactFooterState extends State<ContactFooter> {
               const SizedBox(width: 16),
 
               // Back to Top Button
-              IconButton(
-                onPressed: widget.onScrollToTop,
-                icon: const Icon(Icons.arrow_upward_rounded),
-                color: AppColors.textSecondary,
-                tooltip: "Back to top",
-                style: IconButton.styleFrom(
-                  backgroundColor: AppColors.surface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: AppColors.cardBorder),
+              CursorInteractable(
+                mode: CursorMode.pointer,
+                accentColor: AppColors.secondary,
+                child: IconButton(
+                  onPressed: widget.onScrollToTop,
+                  icon: const Icon(Icons.arrow_upward_rounded),
+                  color: AppColors.textSecondary,
+                  tooltip: "Back to top",
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: AppColors.cardBorder),
+                    ),
                   ),
                 ),
               ),
@@ -306,35 +309,40 @@ class _ContactFooterState extends State<ContactFooter> {
     String title,
     String url,
   ) {
-    return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) launchUrl(uri);
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.cardBorder),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SocialBrandIcon(brand: brand, size: 16, color: AppColors.primaryLight),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+    return CursorInteractable(
+      mode: CursorMode.pointer,
+      accentColor: AppColors.secondary,
+      child: InkWell(
+        onTap: () async {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) launchUrl(uri);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.cardBorder),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SocialBrandIcon(brand: brand, size: 16, color: AppColors.primaryLight),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

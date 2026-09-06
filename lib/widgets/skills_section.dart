@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../portfolio_data.dart';
 import '../theme/app_theme.dart';
+import 'animated_cursor.dart';
+import 'interactive_card.dart';
 
 class SkillsSection extends StatelessWidget {
   const SkillsSection({super.key});
@@ -92,7 +94,7 @@ class SkillsSection extends StatelessWidget {
   }
 }
 
-class _SkillCategoryCard extends StatefulWidget {
+class _SkillCategoryCard extends StatelessWidget {
   final SkillCategory category;
   final int index;
   final bool isMobile;
@@ -103,15 +105,8 @@ class _SkillCategoryCard extends StatefulWidget {
     required this.isMobile,
   });
 
-  @override
-  State<_SkillCategoryCard> createState() => _SkillCategoryCardState();
-}
-
-class _SkillCategoryCardState extends State<_SkillCategoryCard> {
-  bool _isHovered = false;
-
   Color get _accentColor {
-    switch (widget.index % 4) {
+    switch (index % 4) {
       case 0:
         return AppColors.primary;
       case 1:
@@ -125,7 +120,7 @@ class _SkillCategoryCardState extends State<_SkillCategoryCard> {
   }
 
   IconData get _categoryIcon {
-    switch (widget.index % 4) {
+    switch (index % 4) {
       case 0:
         return Icons.code_rounded;
       case 1:
@@ -143,95 +138,119 @@ class _SkillCategoryCardState extends State<_SkillCategoryCard> {
     final chipsWidget = Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: widget.category.skills.map((skill) {
-        return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 6,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.cardBorder),
-          ),
-          child: Text(
-            skill,
-            style: GoogleFonts.jetBrainsMono(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        );
+      children: category.skills.map((skill) {
+        return _HoverSkillChip(skill: skill, accentColor: _accentColor);
       }).toList(),
     );
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          color: _isHovered ? AppColors.surfaceSubtle : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _isHovered ? _accentColor : AppColors.cardBorder,
-            width: _isHovered ? 1.5 : 1.0,
-          ),
-          boxShadow: [
-            if (_isHovered)
-              BoxShadow(
-                color: _accentColor.withValues(alpha: 0.12),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+    return InteractiveTiltCard(
+      accentColor: _accentColor,
+      cursorLabel: "SKILL",
+      maxTiltAngle: 0.05,
+      hoverScale: 1.015,
+      padding: const EdgeInsets.all(22),
+      borderRadius: BorderRadius.circular(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: isMobile ? MainAxisSize.min : MainAxisSize.max,
+        children: [
+          // Category Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _accentColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(_categoryIcon, size: 18, color: _accentColor),
               ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: widget.isMobile ? MainAxisSize.min : MainAxisSize.max,
-          children: [
-            // Category Header
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: _accentColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(_categoryIcon, size: 18, color: _accentColor),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    widget.category.categoryName,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Skill Chips
-            if (widget.isMobile)
-              chipsWidget
-            else
+              const SizedBox(width: 12),
               Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: chipsWidget,
+                child: Text(
+                  category.categoryName,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
-          ],
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Skill Chips
+          if (isMobile)
+            chipsWidget
+          else
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: chipsWidget,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HoverSkillChip extends StatefulWidget {
+  final String skill;
+  final Color accentColor;
+
+  const _HoverSkillChip({required this.skill, required this.accentColor});
+
+  @override
+  State<_HoverSkillChip> createState() => _HoverSkillChipState();
+}
+
+class _HoverSkillChipState extends State<_HoverSkillChip> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return CursorInteractable(
+      mode: CursorMode.pointer,
+      accentColor: widget.accentColor,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: _isHovered
+                ? widget.accentColor.withValues(alpha: 0.15)
+                : AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: _isHovered
+                  ? widget.accentColor.withValues(alpha: 0.6)
+                  : AppColors.cardBorder,
+            ),
+            boxShadow: [
+              if (_isHovered)
+                BoxShadow(
+                  color: widget.accentColor.withValues(alpha: 0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+            ],
+          ),
+          child: Text(
+            widget.skill,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 12,
+              fontWeight: _isHovered ? FontWeight.w600 : FontWeight.w500,
+              color: _isHovered ? Colors.white : AppColors.textSecondary,
+            ),
+          ),
         ),
       ),
     );
   }
 }
+

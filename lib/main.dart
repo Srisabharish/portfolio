@@ -3,6 +3,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'portfolio_data.dart';
 import 'theme/app_theme.dart';
 import 'widgets/about_and_education_section.dart';
+import 'widgets/animated_background.dart';
+import 'widgets/animated_cursor.dart';
 import 'widgets/contact_footer.dart';
 import 'widgets/hero_section.dart';
 import 'widgets/navbar.dart';
@@ -101,68 +103,23 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Ambient Midnight Background Glows
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.12),
-                    Colors.transparent,
-                  ],
-                ),
+    return AnimatedCursor(
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            // Ambient Midnight Background Breathing Glows
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: AnimatedAmbientBackground(),
               ),
             ),
-          ),
-          Positioned(
-            top: 600,
-            left: -150,
-            child: Container(
-              width: 600,
-              height: 600,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.secondary.withValues(alpha: 0.08),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 400,
-            right: -150,
-            child: Container(
-              width: 550,
-              height: 550,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.08),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
 
-          // Main Scrollable Body
-          SingleChildScrollView(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            child: Column(
+            // Main Scrollable Body
+            SingleChildScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              child: Column(
               children: [
                 const SizedBox(height: 90), // Space for floating navbar
 
@@ -221,6 +178,7 @@ class _PortfolioHomePageState extends State<PortfolioHomePage> {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

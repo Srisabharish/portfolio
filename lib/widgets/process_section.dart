@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../portfolio_data.dart';
 import '../theme/app_theme.dart';
+import 'interactive_card.dart';
 
 class ProcessSection extends StatelessWidget {
   const ProcessSection({super.key});
@@ -109,25 +110,13 @@ class _ProcessStepCardState extends State<_ProcessStepCard> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      child: InteractiveTiltCard(
+        accentColor: AppColors.primaryLight,
+        cursorLabel: "STEP",
+        maxTiltAngle: 0.05,
+        hoverScale: 1.02,
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: _isHovered ? AppColors.surfaceSubtle : AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: _isHovered ? AppColors.primary : AppColors.cardBorder,
-            width: _isHovered ? 1.5 : 1.0,
-          ),
-          boxShadow: [
-            if (_isHovered)
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-          ],
-        ),
+        borderRadius: BorderRadius.circular(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -143,10 +132,15 @@ class _ProcessStepCardState extends State<_ProcessStepCard> {
                     color: AppColors.primaryLight,
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 18,
-                  color: _isHovered ? AppColors.primaryLight : AppColors.textMuted,
+                AnimatedSlide(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  offset: _isHovered ? const Offset(0.2, 0) : Offset.zero,
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 18,
+                    color: _isHovered ? AppColors.primaryLight : AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -174,3 +168,4 @@ class _ProcessStepCardState extends State<_ProcessStepCard> {
     );
   }
 }
+

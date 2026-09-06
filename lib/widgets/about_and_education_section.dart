@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../portfolio_data.dart';
 import '../theme/app_theme.dart';
+import 'animated_cursor.dart';
+import 'interactive_card.dart';
 
 class AboutAndEducationSection extends StatelessWidget {
   const AboutAndEducationSection({super.key});
@@ -70,20 +72,13 @@ class AboutAndEducationSection extends StatelessWidget {
   }
 
   Widget _buildAboutProfileCard(BuildContext context) {
-    return Container(
+    return InteractiveTiltCard(
+      accentColor: AppColors.primaryLight,
+      cursorLabel: "ABOUT",
+      maxTiltAngle: 0.04,
+      hoverScale: 1.015,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
+      borderRadius: BorderRadius.circular(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -206,13 +201,13 @@ class AboutAndEducationSection extends StatelessWidget {
 
         // Education Card
         for (final edu in PortfolioData.education) ...[
-          Container(
+          InteractiveTiltCard(
+            accentColor: AppColors.secondary,
+            cursorLabel: "DEGREE",
+            maxTiltAngle: 0.04,
+            hoverScale: 1.015,
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.cardBorder),
-            ),
+            borderRadius: BorderRadius.circular(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -302,81 +297,84 @@ class AboutAndEducationSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 14),
-
         // Certifications List
         for (final cert in PortfolioData.certifications) ...[
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.cardBorder),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.emerald.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+          CursorInteractable(
+            mode: CursorMode.pointer,
+            accentColor: AppColors.emerald,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.cardBorder),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.emerald.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.workspace_premium_rounded,
+                      color: AppColors.emerald,
+                      size: 18,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.workspace_premium_rounded,
-                    color: AppColors.emerald,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        alignment: WrapAlignment.spaceBetween,
-                        spacing: 12,
-                        runSpacing: 4,
-                        children: [
-                          Text(
-                            cert.title,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          spacing: 12,
+                          runSpacing: 4,
+                          children: [
+                            Text(
+                              cert.title,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
-                          ),
-                          Text(
-                            cert.date,
-                            style: GoogleFonts.jetBrainsMono(
-                              fontSize: 11,
-                              color: AppColors.textMuted,
+                            Text(
+                              cert.date,
+                              style: GoogleFonts.jetBrainsMono(
+                                fontSize: 11,
+                                color: AppColors.textMuted,
+                              ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          cert.organization,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.secondary,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        cert.organization,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondary,
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        cert.description,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
-                          height: 1.4,
-                          color: AppColors.textSecondary,
+                        const SizedBox(height: 6),
+                        Text(
+                          cert.description,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

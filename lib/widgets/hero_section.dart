@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../portfolio_data.dart';
 import '../theme/app_theme.dart';
+import 'animated_cursor.dart';
+import 'interactive_card.dart';
+import 'navbar.dart';
 import 'social_icons.dart';
 
 class HeroSection extends StatefulWidget {
@@ -125,21 +128,7 @@ class _HeroSectionState extends State<HeroSection> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: AppColors.emerald,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.emerald,
-                  blurRadius: 6,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-          ),
+          const PulsingRadarDot(color: AppColors.emerald, size: 8),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
@@ -223,60 +212,72 @@ class _HeroSectionState extends State<HeroSection> {
           runSpacing: 12,
           children: [
             // View Work
-            ElevatedButton.icon(
-              onPressed: widget.onViewWorkTap,
-              icon: const Icon(Icons.arrow_downward_rounded, size: 18),
-              label: const Text("View Selected Work"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+            CursorInteractable(
+              mode: CursorMode.pointer,
+              accentColor: AppColors.primaryLight,
+              child: ElevatedButton.icon(
+                onPressed: widget.onViewWorkTap,
+                icon: const Icon(Icons.arrow_downward_rounded, size: 18),
+                label: const Text("View Selected Work"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
 
             // Copy Email
-            OutlinedButton.icon(
-              onPressed: _copyEmail,
-              icon: Icon(
-                _emailCopied ? Icons.check_circle : Icons.copy_rounded,
-                size: 16,
-                color: _emailCopied ? AppColors.emerald : AppColors.textPrimary,
-              ),
-              label: Text(_emailCopied ? "Email Copied!" : "Copy Email"),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                side: BorderSide(
-                  color: _emailCopied ? AppColors.emerald : AppColors.cardBorder,
-                  width: 1.2,
+            CursorInteractable(
+              mode: CursorMode.pointer,
+              accentColor: AppColors.emerald,
+              child: OutlinedButton.icon(
+                onPressed: _copyEmail,
+                icon: Icon(
+                  _emailCopied ? Icons.check_circle : Icons.copy_rounded,
+                  size: 16,
+                  color: _emailCopied ? AppColors.emerald : AppColors.textPrimary,
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
+                label: Text(_emailCopied ? "Email Copied!" : "Copy Email"),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.textPrimary,
+                  side: BorderSide(
+                    color: _emailCopied ? AppColors.emerald : AppColors.cardBorder,
+                    width: 1.2,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  backgroundColor: AppColors.surface.withValues(alpha: 0.6),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                backgroundColor: AppColors.surface.withValues(alpha: 0.6),
               ),
             ),
 
             // Contact CTA
-            TextButton.icon(
-              onPressed: widget.onContactTap,
-              icon: const Icon(Icons.arrow_outward_rounded, size: 18),
-              label: const Text("Let's Connect"),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.secondary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
+            CursorInteractable(
+              mode: CursorMode.pointer,
+              accentColor: AppColors.secondary,
+              child: TextButton.icon(
+                onPressed: widget.onContactTap,
+                icon: const Icon(Icons.arrow_outward_rounded, size: 18),
+                label: const Text("Let's Connect"),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.secondary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
                 ),
               ),
             ),
@@ -309,25 +310,7 @@ class _HeroSectionState extends State<HeroSection> {
   }
 
   Widget _buildSocialIcon(String brand, String url) {
-    return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) launchUrl(uri);
-      },
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.cardBorder),
-        ),
-        child: Center(
-          child: SocialBrandIcon(brand: brand, size: 16),
-        ),
-      ),
-    );
+    return _HoverSocialIcon(brand: brand, url: url);
   }
 
   Widget _buildHeroPhotoCard() {
@@ -350,139 +333,139 @@ class _HeroSectionState extends State<HeroSection> {
           ),
         ),
 
-        // Photo Frame
-        Container(
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 360),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cardBorder, width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.6),
-                blurRadius: 30,
-                offset: const Offset(0, 15),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Photo Header Bar (Olio template style)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFEF4444),
-                            shape: BoxShape.circle,
+        // 3D Interactive Tilt Photo Frame
+        InteractiveTiltCard(
+          accentColor: AppColors.primaryLight,
+          cursorLabel: "PROFILE",
+          maxTiltAngle: 0.08,
+          hoverScale: 1.02,
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 360),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.cardBorder, width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Photo Header Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFEF4444),
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF59E0B),
-                            shape: BoxShape.circle,
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF59E0B),
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF10B981),
-                            shape: BoxShape.circle,
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF10B981),
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "SRI SABHARISH // PORTFOLIO",
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textMuted,
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1, color: AppColors.cardBorder),
-
-              // Image
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(22),
-                ),
-                child: Stack(
-                  children: [
-                    Image.asset(
-                      PortfolioData.personal.heroPhoto,
-                      height: 380,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-
-                    // Gradient overlay at bottom
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        height: 110,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              AppColors.background.withValues(alpha: 0.95),
-                            ],
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Chennai, Tamil Nadu",
-                                style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 11,
-                                  color: AppColors.secondary,
-                                ),
-                              ),
-                              Text(
-                                "Crafting Pixel-Perfect Mobile Apps",
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
+                      Text(
+                        "SRI SABHARISH // PORTFOLIO",
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textMuted,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const Divider(height: 1, color: AppColors.cardBorder),
+
+                // Image with subtle gradient
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(22),
+                  ),
+                  child: Stack(
+                    children: [
+                      Image.asset(
+                        PortfolioData.personal.heroPhoto,
+                        height: 380,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+
+                      // Gradient overlay at bottom
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          height: 110,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                AppColors.background.withValues(alpha: 0.95),
+                              ],
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Chennai, Tamil Nadu",
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 11,
+                                    color: AppColors.secondary,
+                                  ),
+                                ),
+                                Text(
+                                  "Crafting Pixel-Perfect Mobile Apps",
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -546,6 +529,67 @@ class _HeroSectionState extends State<HeroSection> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _HoverSocialIcon extends StatefulWidget {
+  final String brand;
+  final String url;
+
+  const _HoverSocialIcon({required this.brand, required this.url});
+
+  @override
+  State<_HoverSocialIcon> createState() => _HoverSocialIconState();
+}
+
+class _HoverSocialIconState extends State<_HoverSocialIcon> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return CursorInteractable(
+      mode: CursorMode.pointer,
+      accentColor: AppColors.primaryLight,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: InkWell(
+          onTap: () async {
+            final uri = Uri.parse(widget.url);
+            if (await canLaunchUrl(uri)) launchUrl(uri);
+          },
+          borderRadius: BorderRadius.circular(10),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: _isHovered ? AppColors.primary.withValues(alpha: 0.2) : AppColors.surface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _isHovered ? AppColors.primaryLight : AppColors.cardBorder,
+              ),
+              boxShadow: [
+                if (_isHovered)
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+              ],
+            ),
+            child: Center(
+              child: SocialBrandIcon(
+                brand: widget.brand,
+                size: 16,
+                color: _isHovered ? Colors.white : AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
